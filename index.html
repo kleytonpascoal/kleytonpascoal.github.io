@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfólio - Seu Nome</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f7f7f7;
+      scroll-behavior: smooth;
+    }
+
+    header {
+      background-color: #007acc;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    section {
+      padding: 40px 20px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .filters {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .filter-btn {
+      margin: 5px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background-color: #ddd;
+      transition: 0.3s;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      background-color: #007acc;
+      color: white;
+    }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .project {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s, opacity 0.3s;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.5s forwards;
+    }
+
+    .project img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .project a {
+      font-size: 18px;
+      color: #007acc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .project p {
+      margin-top: 8px;
+      color: #555;
+    }
+
+    .language {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #777;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    footer {
+      background-color: #007acc;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Portfólio de Seu Nome</h1>
+    <nav>
+      <a href="#inicio">Início</a>
+      <a href="#projetos">Projetos</a>
+      <a href="#sobre">Sobre</a>
+    </nav>
+  </header>
+
+  <section id="inicio">
+    <h2>Bem-vindo!</h2>
+    <p style="text-align:center; max-width: 600px; margin: 0 auto;">
+      Aqui você encontrará meus projetos de desenvolvimento, com foco em apps Android, Kotlin, backend em Spring Boot, e muito mais.
+    </p>
+  </section>
+
+  <section id="projetos">
+    <h2>Projetos</h2>
+    <div class="filters" id="filter-container"></div>
+    <div class="projects" id="project-list"></div>
+  </section>
+
+  <section id="sobre">
+    <h2>Sobre Mim</h2>
+    <p style="max-width: 600px; margin: 0 auto; text-align: center;">
+      Sou desenvolvedor mobile com mais de 12 anos de experiência. Tenho paixão por arquitetura limpa, código de qualidade e produtos que resolvem problemas reais.
+      <br><br>
+      📧 Email: seuemail@email.com  
+      <br>
+      💼 GitHub: <a href="https://github.com/seu-username" target="_blank">github.com/seu-username</a>
+    </p>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 - Seu Nome. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    const username = 'SEU_USERNAME_AQUI'; // <-- Coloque seu username aqui
+
+    const projectList = document.getElementById('project-list');
+    const filterContainer = document.getElementById('filter-container');
+
+    function createCard(repo) {
+      const card = document.createElement('div');
+      card.className = 'project';
+      card.setAttribute('data-lang', repo.language || 'Outros');
+
+      const imagePath = `assets/images/${repo.name}.png`; // Ex: assets/images/todo-app.png
+
+      card.innerHTML = `
+        <img src="${imagePath}" alt="${repo.name}" onerror="this.style.display='none'" />
+        <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+        <p>${repo.description || 'Sem descrição disponível.'}</p>
+        <div class="language">Linguagem: ${repo.language || 'Outros'}</div>
+      `;
+
+      return card;
+    }
+
+    function renderProjects(projects) {
+      projectList.innerHTML = '';
+      projects.forEach(repo => {
+        const card = createCard(repo);
+        projectList.appendChild(card);
+      });
+    }
+
+    function renderFilters(languages) {
+      filterContainer.innerHTML = '';
+
+      const allBtn = document.createElement('button');
+      allBtn.textContent = 'Todos';
+      allBtn.className = 'filter-btn active';
+      allBtn.onclick = () => applyFilter('Todos');
+      filterContainer.appendChild(allBtn);
+
+      languages.forEach(lang => {
+        const btn = document.createElement('button');
+        btn.textContent = lang;
+        btn.className = 'filter-btn';
+        btn.onclick = () => applyFilter(lang);
+        filterContainer.appendChild(btn);
+      });
+    }
+
+    function applyFilter(language) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      const selected = [...document.querySelectorAll('.filter-btn')].find(btn => btn.textContent === language);
+      if (selected) selected.classList.add('active');
+
+      const cards = document.querySelectorAll('.project');
+      cards.forEach(card => {
+        const lang = card.getAttribute('data-lang');
+        card.style.display = (language === 'Todos' || lang === language) ? 'block' : 'none';
+      });
+    }
+
+    async function loadProjects() {
+      const res = await fetch(`https://api.github.com/users/${username}/repos`);
+      const data = await res.json();
+      const projects = data.filter(repo => !repo.fork);
+
+      renderProjects(projects);
+
+      const langs = [...new Set(projects.map(p => p.language).filter(Boolean))];
+      renderFilters(langs.sort());
+    }
+
+    loadProjects();
+  </script>
+</body>
+</html>
